@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'proto/dart/session.pb.dart';
 
+// Enum for state of protocomm_security1 FSM
 enum SecurityState {
   REQUEST1,
   RESPONSE1_REQUEST2,
