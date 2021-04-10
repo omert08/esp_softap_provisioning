@@ -11,8 +11,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  protobuf: ^1.0.1
+  protobuf: ^2.0.0
+  cryptography: ^2.0.1
+  encrypt: ^5.0.0
+  logger: ^1.0.0
 
 dev_dependencies:
   flutter_test:
