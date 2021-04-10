@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:flutter/services.dart';
 import 'package:encrypt/encrypt.dart';
 
-class Cipher {
+class Crypter {
   Encrypter enc;
   IV iv;
-  Crypto(Uint8List key, Uint8List iv)
-  {
+
+  Future <bool> init (Uint8List key, Uint8List iv) async {
     this.iv = IV(iv);
     this.enc = Encrypter(AES(Key(key), mode: AESMode.ctr, padding: null));
   }
