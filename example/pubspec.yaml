@@ -11,7 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_spinkit: ^4.1.2
+  equatable: ^2.0.0
+  flutter_bloc: ^7.0.0
   esp_softap_provisioning:
     # When depending on this package from a real application you should use:
     #   esp_softap_provisioning: ^x.y.z
