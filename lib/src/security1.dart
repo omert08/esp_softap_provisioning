@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
@@ -9,7 +10,7 @@ import 'proto/dart/session.pb.dart';
 import 'security.dart';
 import 'package:logger/logger.dart';
 
-import 'package:cryptography/cryptography.dart';
+
 
 Future<void> main() async {
   final algorithm = X25519();
@@ -35,7 +36,9 @@ class Security1 implements Security {
   final String pop;
   final bool verbose;
   SecurityState sessionState;
-  SimpleKeyPair clientKey;
+  //SimpleKeyPair keyPair;
+  SimpleKeyPairData clientKey;
+  List<int> clientPubKey;
   SimplePublicKey devicePublicKey;
   Uint8List deviceRandom;
   Crypter crypt = Crypter();
@@ -49,11 +52,11 @@ class Security1 implements Security {
 
   Future<Uint8List> encrypt(Uint8List data) async {
     logger.i('raw data before encryption: ${data.toString()}');
-    return crypt.encrypt(data);
+    return this.crypt.encrypt(data);
   }
 
   Future<Uint8List> decrypt(Uint8List data) async {
-    return decrypt(data);
+    return this.crypt.decrypt(data);
   }
 
   Future<void> _generateKey() async {
@@ -99,11 +102,15 @@ class Security1 implements Security {
     setupRequest.secVer = SecSchemeVersion.SecScheme1;
     await _generateKey();
     SessionCmd0 sc0 = SessionCmd0();
-    sc0.clientPubkey = await clientKey.extractPrivateKeyBytes();
+    await clientKey.extractPublicKey().then((pubkey) {
+
+        sc0.clientPubkey = pubkey.bytes;
+        clientPubKey = pubkey.bytes;
+    });
     Sec1Payload sec1 = Sec1Payload();
     sec1.sc0 = sc0;
     setupRequest.sec1 = sec1;
-    logger.i("setup0Request: clientPubkey = ${clientKey.extractPrivateKeyBytes.toString()}");
+    logger.i("setup0Request: clientPubkey = ${clientKey.bytes.toString()}");
     return setupRequest;
   }
 
@@ -116,34 +123,38 @@ class Security1 implements Security {
     deviceRandom = setupResp.sec1.sr0.deviceRandom;
 
     logger.i(
-        'setup0Response:Device public key ${devicePublicKey.toString()}');
+        'setup0Response:Device public key ${devicePublicKey.bytes.toString()}');
     logger.i('setup0Response:Device random ${deviceRandom.toString()}');
 
     final sharedKey = await algorithm.sharedSecretKey(
         keyPair: clientKey,
         remotePublicKey: devicePublicKey);
 
-    var sharedSecretBytes = await sharedKey.extractBytes();
-    logger.i('setup0Response: Shared key calculated: ${sharedSecretBytes.toString()}');
+    // Uint8List sharedSecretBytes =  Uint8List.fromList( await sharedKey.extractBytes());
 
-    if (pop != null) {
-      var sink = Sha512().newHashSink();
-      sink.add(utf8.encode(pop));
-      sink.close();
-      final hash = await sink.hash();
-      sharedSecretBytes = _xor(sharedSecretBytes, hash.bytes);
+    await sharedKey.extractBytes().then((sharedSecret) async {
+      Uint8List sharedBytes;
+      logger.i('setup0Response: Shared key calculated: ${sharedSecret.toString()}');
+      if (pop != null) {
+        var sink = Sha256().newHashSink();
+        sink.add(utf8.encode(pop));
+        sink.close();
+        final hash = await sink.hash();
+        sharedBytes = _xor(Uint8List.fromList(sharedSecret),Uint8List.fromList(hash.bytes));
+        logger.i(
+            'setup0Response: pop: $pop, hash: ${hash.bytes.toString()} sharedK: ${sharedBytes.toString()}');
+      }
+      await this.crypt.init(sharedBytes, deviceRandom);
       logger.i(
-          'setup0Response: pop: $pop, hash: ${hash.bytes.toString()} sharedK: ${sharedKey.toString()}');
-    }
-    await crypt.init(Uint8List.fromList(sharedSecretBytes), deviceRandom);
-    logger.i(
-        'setup0Response: cipherSecretKey: ${sharedKey.toString()} cipherNonce: ${deviceRandom.toString()}');
-    return setupResp;
+          'setup0Response: cipherSecretKey: ${sharedBytes.toString()} cipherNonce: ${deviceRandom.toString()}');
+      return setupResp;
+    });
+
   }
 
   Future<SessionData> setup1Request(SessionData responseData) async {
     logger.i('setup1Request ${devicePublicKey.toString()}');
-    var clientVerify = await encrypt(devicePublicKey.bytes);
+    var clientVerify = await encrypt(Uint8List.fromList(devicePublicKey.bytes));
 
     logger.i('client verify ${clientVerify.toString()}');
     var setupRequest = SessionData();
@@ -154,6 +165,7 @@ class Security1 implements Security {
     sc1.clientVerifyData = clientVerify;
     sec1.sc1 = sc1;
     setupRequest.sec1 = sec1;
+    logger.i('setup1Request finished');
     return setupRequest;
   }
 
@@ -163,13 +175,24 @@ class Security1 implements Security {
     if (setupResp.secVer == SecSchemeVersion.SecScheme1) {
       final deviceVerify = setupResp.sec1.sr1.deviceVerifyData;
       logger.i('Device verify: ${deviceVerify.toString()}');
-      final encClientPubkey =
-      await decrypt(setupResp.sec1.sr1.deviceVerifyData);
-      logger.i('Enc client pubkey: ${encClientPubkey.toString()}');
-      Function eq = const ListEquality().equals;
-      if (!eq(encClientPubkey, clientKey.extractPrivateKeyBytes())) {
-        throw Exception('Mismatch in device verify');
-      }
+      final encClientPubkey = await decrypt(Uint8List.fromList(setupResp.sec1.sr1.deviceVerifyData));
+      await clientKey.extractPublicKey().then((pubkey) {
+        Function eq = const ListEquality().equals;
+        logger.i('Enc client pubkey fro device: ${encClientPubkey.toString()}');
+        logger.i('Client pubkey: ${pubkey.bytes.toString()}');
+        logger.i('Client pubkey in BYTES: ${Uint8List.fromList(pubkey.bytes).toString()}');
+
+        logger.i('Self Client pubkey: ${clientPubKey.toString()}');
+
+        if (!eq(encClientPubkey, pubkey.bytes)) {
+          throw Exception('Mismatch in device verify');
+        }
+        // sc0.clientPubkey = pubkey.bytes;
+        // clientPubKey = pubkey.bytes;
+      });
+
+
+
       return null;
     }
     throw Exception('Unsupported security protocol');
