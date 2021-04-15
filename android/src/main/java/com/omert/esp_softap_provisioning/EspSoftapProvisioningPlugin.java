@@ -1,4 +1,4 @@
-package android.src.main.java.com.omert.esp_softap_provisioning;
+package com.omert.esp_softap_provisioning;
 
 import androidx.annotation.NonNull;
 
@@ -18,8 +18,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/** EspProvisioningPlugin */
-public class EspSoftApProvisioningPlugin implements FlutterPlugin, MethodCallHandler {
+/** EspSoftapProvisioningPlugin */
+public class EspSoftapProvisioningPlugin implements FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -29,7 +29,7 @@ public class EspSoftApProvisioningPlugin implements FlutterPlugin, MethodCallHan
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "esp_provisioning");
+    channel = new MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "esp_softap_provisioning");
     channel.setMethodCallHandler(this);
   }
 
@@ -44,7 +44,7 @@ public class EspSoftApProvisioningPlugin implements FlutterPlugin, MethodCallHan
   // in the same class.
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "esp_softap_provisioning");
-    channel.setMethodCallHandler(new EspSoftApProvisioningPlugin());
+    channel.setMethodCallHandler(new EspSoftapProvisioningPlugin());
   }
 
   @Override
