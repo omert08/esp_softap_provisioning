@@ -81,10 +81,18 @@ class Provisioning {
   }
 
   Future<WiFiScanPayload> scanStatusRequest() async {
+    print('scanStatusRequest started');
     WiFiScanPayload payload = WiFiScanPayload();
     payload.msg = WiFiScanMsgType.TypeCmdScanStatus;
+    print('before encrypt');
     var reqData = await security.encrypt(payload.writeToBuffer());
+    print('after encrypt');
+    print('before sendreceive');
+
     var respData = await transport.sendReceive('prov-scan', reqData);
+    print('after sendreceive');
+    print('before scanStatusResponse');
+
     return scanStatusResponse(respData);
   }
 
@@ -98,8 +106,11 @@ class Provisioning {
     cmdScanResult.count = count;
 
     payload.cmdScanResult = cmdScanResult;
+    print('++++ aaaa ++++');
     var reqData = await security.encrypt(payload.writeToBuffer());
+    print('++++ xxxx ++++');
     var respData = await transport.sendReceive('prov-scan', reqData);
+    print('++++ yyyyy ++++');
     return scanResultResponse(respData);
   }
 
@@ -122,11 +133,13 @@ class Provisioning {
   }
 
   Future<List<Map<String, dynamic>>> scan(
+
       {bool blocking = true,
       bool passive = false,
       int groupChannels = 5,
       int periodMs = 0}) async {
     try {
+      print('Scan Started');
       await startScanRequest(
           blocking: blocking,
           passive: passive,
@@ -181,7 +194,7 @@ class Provisioning {
   Future<Uint8List> sendReceiveCustomData(Uint8List data, {int packageSize = 256}) async {
     var i = data.length;
     var offset = 0;
-    List<int> ret;
+    List<int> ret = [];
     while (i > 0) {
       var needToSend = data.sublist(offset, i < packageSize ? i : packageSize);
       var encrypted = await security.encrypt(needToSend);
