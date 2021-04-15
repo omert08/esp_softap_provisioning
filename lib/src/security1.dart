@@ -15,14 +15,13 @@ class Security1 implements Security {
   final String pop;
   final bool verbose;
   SecurityState sessionState;
-  //SimpleKeyPair keyPair;
-  KeyPair clientKey;
-  List<int> sharedKeyBytes;
-  PublicKey devicePublicKey;
+  SimpleKeyPairData clientKey;
+  List<int> clientPubKey;
+  SimplePublicKey devicePublicKey;
   Uint8List deviceRandom;
   Cryptor crypt = Cryptor();
   var logger = Logger();
-
+  final algorithm = X25519();
 
   Security1(
       {this.pop,
@@ -41,7 +40,7 @@ class Security1 implements Security {
 
   Future<void> _generateKey() async {
     // creates client key with X25519 algo
-    this.clientKey = await x25519.newKeyPair();
+    this.clientKey = await algorithm.newKeyPair();
   }
 
 
@@ -82,11 +81,15 @@ class Security1 implements Security {
     setupRequest.secVer = SecSchemeVersion.SecScheme1;
     await _generateKey();
     SessionCmd0 sc0 = SessionCmd0();
-    sc0.clientPubkey = clientKey.publicKey.bytes;
+    await clientKey.extractPublicKey().then((publicKey) {
+      sc0.clientPubkey = publicKey.bytes;
+      clientPubKey = publicKey.bytes;
+    });
+
     Sec1Payload sec1 = Sec1Payload();
     sec1.sc0 = sc0;
     setupRequest.sec1 = sec1;
-    logger.i("setup0Request: clientPubkey = ${clientKey.publicKey.bytes.toString()}");
+    logger.i("setup0Request: clientPubkey = ${clientPubKey.toString()}");
     return setupRequest;
   }
 
@@ -95,34 +98,34 @@ class Security1 implements Security {
     if (setupResp.secVer != SecSchemeVersion.SecScheme1) {
       throw Exception('Invalid sec scheme');
     }
-    devicePublicKey = PublicKey(setupResp.sec1.sr0.devicePubkey);
+    devicePublicKey = SimplePublicKey(setupResp.sec1.sr0.devicePubkey, type: KeyPairType.x25519);
     deviceRandom = Uint8List.fromList(setupResp.sec1.sr0.deviceRandom);
 
     logger.i(
-        'setup0Response:Device public key ${devicePublicKey.bytes.toString()}');
+        'setup0Response:Device public key ${devicePublicKey.toString()}');
     logger.i('setup0Response:Device random ${deviceRandom.toString()}');
 
-    final sharedKey = await x25519.sharedSecret(
-        localPrivateKey: clientKey.privateKey,
+    final sharedKey = await algorithm.sharedSecretKey(
+        keyPair: clientKey,
         remotePublicKey: devicePublicKey);
 
-    // Uint8List sharedSecretBytes =  Uint8List.fromList( await sharedKey.extractBytes());
-    sharedKeyBytes = sharedKey.extractSync();
-    logger.i('setup0Response: Shared key calculated: ${sharedKeyBytes.toString()}');
-    if (pop != null) {
-      var sink = sha256.newSink();
-      sink.add(utf8.encode(pop));
-      sink.close();
-      sharedKeyBytes = _xor(Uint8List.fromList(sharedKeyBytes),Uint8List.fromList(sink.hash.bytes));
+    await sharedKey.extractBytes().then((sharedSecret) async {
+      Uint8List sharedKeyBytes;
+      logger.i('setup0Response: Shared key calculated: ${sharedSecret.toString()}');
+      if (pop != null) {
+        var sink = Sha256().newHashSink();
+        sink.add(utf8.encode(pop));
+        sink.close();
+        final hash = await sink.hash();
+        sharedKeyBytes = _xor(Uint8List.fromList(sharedSecret),Uint8List.fromList(hash.bytes));
+        logger.i(
+            'setup0Response: pop: $pop, hash: ${hash.bytes.toString()} sharedK: ${sharedKeyBytes.toString()}');
+      }
+      await this.crypt.init(sharedKeyBytes, deviceRandom);
       logger.i(
-          'setup0Response: pop: $pop, hash: ${sink.hash.bytes.toString()} sharedK: ${sharedKeyBytes.toString()}');
-
-
-    }
-    crypt.init(sharedKeyBytes, deviceRandom);
-    logger.i(
-        'setup0Response: cipherSecretKey: ${sharedKeyBytes.toString()} cipherNonce: ${deviceRandom.toString()}');
-    return setupResp;
+          'setup0Response: cipherSecretKey: ${sharedKeyBytes.toString()} cipherNonce: ${deviceRandom.toString()}');
+      return setupResp;
+    });
 
   }
 
@@ -152,10 +155,10 @@ class Security1 implements Security {
       final encClientPubkey =
       await decrypt(Uint8List.fromList(setupResp.sec1.sr1.deviceVerifyData));
       logger.i('encClientPubkey: ${encClientPubkey.toString()}');
-      logger.i('clientKey.publicKey.bytes: ${clientKey.publicKey.bytes.toString()}');
+      logger.i('clientKey.publicKey.bytes: ${clientPubKey.toString()}');
 
       Function eq = const ListEquality().equals;
-      if (!eq(encClientPubkey, clientKey.publicKey.bytes)) {
+      if (!eq(encClientPubkey, clientPubKey)) {
         throw Exception('Mismatch in device verify');
       }
       return null;

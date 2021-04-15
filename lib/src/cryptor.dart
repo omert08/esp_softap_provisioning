@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/services.dart';
 
 class Cryptor {
