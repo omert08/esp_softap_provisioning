@@ -12,7 +12,7 @@ class TransportHTTP implements Transport{
 
   String hostname;
   Duration timeout;
-  Map<String, String> header = new Map();
+  Map<String, String> headers = new Map();
   var client = http.Client();
 
   TransportHTTP(String hostname) {
@@ -24,10 +24,10 @@ class TransportHTTP implements Transport{
     }
     this.timeout = Duration(seconds: 10);
 
-    header["Content-type"] =  "application/x-www-form-urlencoded";
+    headers["Content-type"] =  "application/x-www-form-urlencoded";
     //header["Content-type"] =  "application/json";
 
-    header["Accept"] =  "text/plain";
+    headers["Accept"] =  "text/plain";
   }
 
   @override
@@ -39,15 +39,24 @@ class TransportHTTP implements Transport{
   Future<void> disconnect() {
     client.close();
   }
+  void _updateCookie(http.Response response) {
+    String rawCookie = response.headers['set-cookie'];
+    if (rawCookie != null) {
+      int index = rawCookie.indexOf(';');
+      headers['cookie'] =
+      (index == -1) ? rawCookie : rawCookie.substring(0, index);
+    }
+  }
 
   @override
   Future<Uint8List> sendReceive(String epName, Uint8List data) async {
     try {
       print("Connecting to " + this.hostname + "/" + epName);
-      final response = await client.post(Uri.http(this.hostname, "/" + epName,),headers: header,
+      final response = await client.post(Uri.http(this.hostname, "/" + epName,),headers: this.headers,
       body: data).timeout(this.timeout).catchError((error){print(error);});
 
       if (response !=null) {
+        _updateCookie(response);
         if (response.statusCode == 200) {
           print('Connection successful');
           //client.close();
