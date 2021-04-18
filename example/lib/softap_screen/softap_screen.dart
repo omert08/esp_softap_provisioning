@@ -14,7 +14,6 @@ class SoftApScreen extends StatefulWidget {
 class _SoftApScreenState extends State<SoftApScreen> {
 
   void _showBottomSheet(BuildContext _context) {
-  //  BlocProvider.of<SoftApBloc>(_context).add(SoftApEventStart());
 
     var bottomSheetController = showModalBottomSheet(
         context: context,
