@@ -74,7 +74,7 @@ class _WifiDialogState extends State<WifiDialog> {
                   height: 50.0,
                   child: MaterialButton(
                       child: Text('Provision'),
-                      color: Colors.redAccent,
+                      color: Colors.lightBlueAccent,
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
