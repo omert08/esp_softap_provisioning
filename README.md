@@ -89,7 +89,3 @@ Library is ready to use, you can check example app directory for implementation.
 
 * I have referred to ESP32 SoftAp provisioning Python code. 
   
-## Maintainers
-
-* ÖMER TABAN 
-
