@@ -12,12 +12,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.lightBlue,
           title: const Text('ESP Provisioning'),
         ),
         body: Center(
           child: MaterialButton(
-            color: Colors.deepOrangeAccent,
+            color: Colors.lightBlueAccent,
             elevation: 5,
             padding: EdgeInsets.all(15.0),
             shape: RoundedRectangleBorder(

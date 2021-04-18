@@ -34,8 +34,8 @@ class _WiFiScreenSoftAPState extends State<WiFiScreenSoftAP> {
         children: <Widget>[
           ElevatedButton.icon(
               onPressed: () {},
-              icon: SpinKitThreeBounce(
-                color: Colors.black,
+              icon: SpinKitFoldingCube(
+                color: Colors.lightBlueAccent,
                 size: 20,
               ),
               label: Text('Connecting..'))
@@ -47,18 +47,18 @@ class _WiFiScreenSoftAPState extends State<WiFiScreenSoftAP> {
               onPressed: () {},
               icon: Icon(
                 Icons.check,
-                color: Colors.green,
+                color: Colors.white38,
               ),
               label: Text(
                 'Connected',
                 style: TextStyle(
-                  color: Colors.green,
+                  color: Colors.white38,
                 ),
               )),
           ElevatedButton.icon(
               onPressed: () {},
-              icon: SpinKitThreeBounce(
-                color: Colors.black,
+              icon: SpinKitFoldingCube(
+                color: Colors.lightBlueAccent,
                 size: 20,
               ),
               label: Text('Scanning...'))
@@ -143,7 +143,7 @@ class _WiFiScreenSoftAPState extends State<WiFiScreenSoftAP> {
             if (state is WifiStateProvisioned) {
               return Container(
                 child: Center(
-                  child: MaterialButton(child: Text('Done'), color: Colors.redAccent, onPressed: () {
+                  child: MaterialButton(child: Text('Done'), color: Colors.lightBlueAccent, onPressed: () {
                     Navigator.of(context).pop();
                   },),
                 ),

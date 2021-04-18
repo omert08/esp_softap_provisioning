@@ -44,7 +44,7 @@ class _SoftApScreenState extends State<SoftApScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.lightBlue,
         title: const Text('Scanning WiFi devices'),
       ),
       body: BlocProvider(
@@ -59,13 +59,13 @@ class _SoftApScreenState extends State<SoftApScreen> {
                     Container(
                       padding: EdgeInsets.all(4.0),
                       width: MediaQuery.of(context).size.width * 0.85,
-                      child:Text('Please connect WiFi to Subol_Gas_Sensor_ in "Wi-Fi Settings". Once you complete it please tap on "Ready" button.',
+                      child:Text('Please connect WiFi to ESP32 AP (PROV_XXX) in "Wi-Fi Settings". Once you complete it please tap on "Ready" button.',
                       style: TextStyle(fontSize: 18),),
                     ),
 
                     SizedBox(height: MediaQuery.of(context).size.width * 0.1,),
                     MaterialButton(
-                      color: Colors.redAccent,
+                      color: Colors.lightBlueAccent,
                       elevation: 5,
                       padding: EdgeInsets.all(15.0),
                       shape: RoundedRectangleBorder(
@@ -89,7 +89,7 @@ class _SoftApScreenState extends State<SoftApScreen> {
             }
 
             return Center(
-              child: SpinKitRipple(color: Theme.of(context).textSelectionColor),
+              child: SpinKitFoldingCube(color: Theme.of(context).textSelectionColor),
             );
           },
         ),
