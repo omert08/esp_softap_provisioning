@@ -4,7 +4,7 @@ A Flutter plugin for provisioning ESP32 modules with SoftAP
 
 ## Example App
 
-<img src="https://raw.githubusercontent.com/omert08/esp_softap_provisioning/main/example/esp_softap_example.gif"  width="480" height="720"/>
+<img src="https://raw.githubusercontent.com/omert08/esp_softap_provisioning/main/example/esp_softap_example.gif"  width="360"/>
 
 ## Tested on
 
@@ -88,7 +88,7 @@ Library is ready to use, you can check example app directory for implementation.
 * I have referred to Sunshine Tech esp_provisioning repository for native Cipher code.
 
 * I have referred to ESP32 SoftAp provisioning Python code. 
-   
+  
 ## Maintainers
 
 * ÖMER TABAN 
