@@ -4,7 +4,7 @@ A Flutter plugin for provisioning ESP32 modules with SoftAP
 
 ## Example App
 
-![Esp32 SoftAp Provisioning Demo](example/esp_softap_example.gif)
+<img src="https://raw.githubusercontent.com/omert08/esp_softap_provisioning/main/example/esp_softap_example.gif"  width="480" height="720"/>
 
 ## Tested on
 
