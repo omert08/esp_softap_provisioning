@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
-          title: const Text('ESP Provisioning'),
+          title: const Text('ESP SoftAp Provisioning'),
         ),
         body: Center(
           child: MaterialButton(
