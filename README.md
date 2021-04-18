@@ -20,8 +20,8 @@ Comparison to esp_provisioning:
 
 | Repo  | softap support | ble support | cryptography | protobuf 
 | ------------- | ------------- | ------------- | ------------- | -------------|
-| esp_softap_provisioning  | :heavy_multiplication_x:  | :heavy_multiplication_x: | :heavy_check_mark: (2.0.1) | :heavy_check_mark: (2.0.0)
-| esp_provisioning  | :heavy_multiplication_x:  | :heavy_multiplication_x: | :heavy_multiplication_x: (1.4.1)  | :heavy_check_mark: (1.0.1)
+| esp_softap_provisioning  | :heavy_check_mark:  | :heavy_multiplication_x: | :heavy_check_mark: (2.0.1) | :heavy_check_mark: (2.0.0)
+| esp_provisioning  | :heavy_multiplication_x:  | :heavy_check_mark: | :heavy_check_mark: (1.4.1)  | :heavy_check_mark: (1.0.1)
 
 Last update: 18 / 04 / 2021
 
