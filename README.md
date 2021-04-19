@@ -35,7 +35,7 @@ Changes on pubspec.yaml
 ```
 dependencies:
   ...
-  esp_softap_provisioning: 1.0.0
+  esp_softap_provisioning: 1.0.1
 ```
 
 then, run ```flutter pub get```, 
