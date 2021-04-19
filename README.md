@@ -88,7 +88,7 @@ For iOS, it's recommended to put platform version >= 9.0 , You can edit this var
 Library is ready to use, you can check example app directory for implementation. <b> Notice that Proof of posession (POP) should be matching with ESP's. </b>
 
 ## Credits
-* I have referred to Sunshine Tech esp_provisioning repository for native Cipher code.
+* I have referred to sunshine-tech [esp_provisioning](https://github.com/sunshine-tech/esp_provisioning) repository for native cipher code.
 
-* I have referred to ESP32 SoftAp provisioning Python code. 
+* I have referred to Espressif [esp_prov](https://github.com/espressif/esp-idf/tree/cf457d4/tools/esp_prov) repository for provisioning structure.
   
