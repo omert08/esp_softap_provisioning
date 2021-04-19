@@ -2,7 +2,7 @@
 
 A Flutter plugin for provisioning ESP32 modules with SoftAP
 
-[![GitHub release](https://img.shields.io/github/tag/Naereen/StrapDown.js.svg)](https://github.com/omert08/esp_softap_provisioning/releases)
+[![GitHub release](https://img.shields.io/github/release/Naereen/StrapDown.js.svg)](https://github.com/omert08/esp_softap_provisioning/releases)
 [![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/omert08/esp_softap_provisioning/blob/main/LICENSE)
 [![pub points](https://badges.bar/sentry/pub%20points)](https://pub.dev/packages/esp_softap_provisioning/score)
 ## Example App
