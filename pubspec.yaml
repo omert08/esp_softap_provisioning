@@ -1,7 +1,6 @@
 name: esp_softap_provisioning
 description: A Flutter plugin for provisioning ESP32 modules with SoftAP
 version: 1.0.0
-author: Ömer Taban
 homepage: https://github.com/omert08/esp_softap_provisioning
 
 environment:
@@ -16,6 +15,7 @@ dependencies:
   logger: ^1.0.0
   string_validator: ^0.3.0
   http: ^0.13.1
+  collection: ^1.15.0
 
 dev_dependencies:
   flutter_test:
