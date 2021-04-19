@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:cryptography/cryptography.dart';
-import 'package:flutter/cupertino.dart';
 import 'cryptor.dart';
 import 'proto/dart/sec1.pb.dart';
 import 'proto/dart/session.pb.dart';
