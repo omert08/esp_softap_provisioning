@@ -1,7 +1,9 @@
 # esp_softap_provisioning
 
 A Flutter plugin for provisioning ESP32 modules with SoftAP
-
+[![GitHub release](https://img.shields.io/github/tag/Naereen/StrapDown.js.svg)](https://github.com/omert08/esp_softap_provisioning/releases)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/omert08/esp_softap_provisioning/blob/main/LICENSE)
+[![pub points](https://badges.bar/sentry/pub%20points)](https://pub.dev/packages/esp_softap_provisioning/score)
 ## Example App
 
 <img src="https://raw.githubusercontent.com/omert08/esp_softap_provisioning/main/example/esp_softap_example.gif"  width="360"/>
@@ -39,20 +41,20 @@ then, run ```flutter pub get```,
 
 We need to give permissions for http connections.
 
-Changes on AndroidManifest.xml (<your_app>/android/app/src/main/AndroidManifest.xml):
+* Changes on AndroidManifest.xml (<your_app>/android/app/src/main/AndroidManifest.xml):
 
-Add bold lines on your application 
+Add ``` <uses-permission android:name="android.permission.INTERNET"/> ``` and ```android:usesCleartextTraffic="true"``` to AndroidManifest.xml. 
 ```
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.omert.esp_softap_provisioning_example">
-    <b> <uses-permission android:name="android.permission.INTERNET"/> </b>
+   <uses-permission android:name="android.permission.INTERNET"/> 
    <application
-        android:label="esp_softap_provisioning_example"
-        <b> android:usesCleartextTraffic="true" </b>
          ...
+         android:usesCleartextTraffic="true" 
+         ...
+   ...
 ```
 
-Changes on Info.plist (<your_app>/ios/Runner/Info.plist) :
+* Changes on Info.plist (<your_app>/ios/Runner/Info.plist) :
 ```
 <plist version="1.0">
 <dict>
@@ -82,7 +84,7 @@ Changes on Info.plist (<your_app>/ios/Runner/Info.plist) :
 
 For iOS, it's recommended to put platform version >= 9.0 , You can edit this variable from Podfile (<your_app>/ios/Podfile)
 
-Library is ready to use, you can check example app directory for implementation. It's important to notice that Proof of posession (POP) should be matching with ESP's. 
+Library is ready to use, you can check example app directory for implementation. <b> It's important to notice that Proof of posession (POP) should be matching with ESP's. </b>
 
 ## Credits
 * I have referred to Sunshine Tech esp_provisioning repository for native Cipher code.
