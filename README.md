@@ -85,7 +85,7 @@ Add ``` <uses-permission android:name="android.permission.INTERNET"/> ``` and ``
 
 For iOS, it's recommended to put platform version >= 9.0 , You can edit this variable from Podfile (<your_app>/ios/Podfile)
 
-Library is ready to use, you can check example app directory for implementation. <b> It's important to notice that Proof of posession (POP) should be matching with ESP's. </b>
+Library is ready to use, you can check example app directory for implementation. <b> Notice that Proof of posession (POP) should be matching with ESP's. </b>
 
 ## Credits
 * I have referred to Sunshine Tech esp_provisioning repository for native Cipher code.
