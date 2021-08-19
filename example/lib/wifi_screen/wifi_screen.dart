@@ -140,10 +140,37 @@ class _WiFiScreenSoftAPState extends State<WiFiScreenSoftAP> {
                 ),
               );
             }
-            if (state is WifiStateProvisioned) {
+            if (state is WifiStateProvisionedSuccessfully) {
               return Container(
                 child: Center(
                   child: MaterialButton(child: Text('Done'), color: Colors.lightBlueAccent, onPressed: () {
+                    Navigator.of(context).pop();
+                  },),
+                ),
+              );
+            }
+            if (state is WifiStateProvisioningAuthError) {
+              return Container(
+                child: Center(
+                  child: MaterialButton(child: Text('Auth Error'), color: Colors.redAccent, onPressed: () {
+                    Navigator.of(context).pop();
+                  },),
+                ),
+              );
+            }
+            if (state is WifiStateProvisioningNetworkNotFound) {
+              return Container(
+                child: Center(
+                  child: MaterialButton(child: Text('Network Not Found'), color: Colors.redAccent, onPressed: () {
+                    Navigator.of(context).pop();
+                  },),
+                ),
+              );
+            }
+            if (state is WifiStateProvisioningDisconnected) {
+              return Container(
+                child: Center(
+                  child: MaterialButton(child: Text('Subol Device Disconnected'), color: Colors.redAccent, onPressed: () {
                     Navigator.of(context).pop();
                   },),
                 ),

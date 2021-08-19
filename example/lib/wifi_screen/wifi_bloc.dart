@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:esp_softap_provisioning/esp_softap_provisioning.dart';
+import 'package:esp_softap_provisioning/src/connection_models.dart';
 import 'package:logger/logger.dart';
 import '../softap_service.dart';
 import './wifi.dart';
@@ -32,10 +33,10 @@ class WiFiBlocSoftAP extends Bloc<WifiEvent, WifiState> {
     try {
       if (Platform.isIOS)
         {
-          prov = await softApService.startProvisioning("wifi-prov.local", "abcd1234");
+          prov = await softApService.startProvisioning("wifi-prov.local", "INC032017");
         }
       else{
-          prov = await softApService.startProvisioning("192.168.4.1:80","abcd1234");
+          prov = await softApService.startProvisioning("192.168.4.1:80","INC032017");
         }
 
     } catch (e) {
@@ -63,8 +64,26 @@ class WiFiBlocSoftAP extends Bloc<WifiEvent, WifiState> {
     await prov.sendReceiveCustomData(customBytes);
     await prov?.sendWifiConfig(ssid: event.ssid, password: event.password);
     await prov?.applyWifiConfig();
-    await Future.delayed(Duration(seconds: 1));
-    yield WifiStateProvisioned();
+    await Future.delayed(Duration(seconds: 10));
+    var connectionStatus = await prov.getStatus();
+
+    if (connectionStatus.state == WifiConnectionState.Connected) {
+      yield WifiStateProvisionedSuccessfully();
+    }
+    /*else if (connectionStatus.state == 1){
+
+    }*/
+    else if (connectionStatus.state == WifiConnectionState.Disconnected){
+      yield WifiStateProvisioningDisconnected();
+    }
+    else if (connectionStatus.state == WifiConnectionState.ConnectionFailed){
+      if (connectionStatus.failedReason == WifiConnectFailedReason.AuthError){
+        yield WifiStateProvisioningAuthError();
+      }
+      else if (connectionStatus.failedReason == WifiConnectFailedReason.NetworkNotFound){
+        yield WifiStateProvisioningNetworkNotFound();
+      }
+    }
   }
 
   @override

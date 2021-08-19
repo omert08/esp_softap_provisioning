@@ -27,4 +27,7 @@ class WifiStateLoaded extends WifiState {
 }
 
 class WifiStateProvisioning extends WifiState {}
-class WifiStateProvisioned extends WifiState {}
+class WifiStateProvisioningDisconnected extends WifiState {}
+class WifiStateProvisioningAuthError extends WifiState {}
+class WifiStateProvisioningNetworkNotFound extends WifiState {}
+class WifiStateProvisionedSuccessfully extends WifiState {}
