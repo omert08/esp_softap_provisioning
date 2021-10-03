@@ -58,9 +58,6 @@ class WiFiBlocSoftAP extends Bloc<WifiEvent, WifiState> {
   Stream<WifiState> _mapProvisioningToState(
       WifiEventStartProvisioningSoftAP event) async* {
     yield WifiStateProvisioning();
-    List<int> customData = utf8.encode("Some CUSTOM data\0");
-    Uint8List customBytes = Uint8List.fromList(customData);
-    await prov.sendReceiveCustomData(customBytes);
     await prov?.sendWifiConfig(ssid: event.ssid, password: event.password);
     await prov?.applyWifiConfig();
     await Future.delayed(Duration(seconds: 1));
