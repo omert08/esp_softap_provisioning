@@ -7,6 +7,8 @@ import 'proto/dart/wifi_scan.pb.dart';
 import 'proto/dart/session.pb.dart';
 import 'security.dart';
 
+import 'package:esp_softap_provisioning/src/connection_models.dart';
+
 import 'transport.dart';
 
 class Provisioning {
@@ -189,6 +191,44 @@ class Provisioning {
     var respRaw = await security.decrypt(respData);
     var respPayload = WiFiConfigPayload.fromBuffer(respRaw);
     return (respPayload.respApplyConfig.status == Status.Success);
+  }
+
+  Future<ConnectionStatus> getStatus() async {
+    var payload = WiFiConfigPayload();
+    payload.msg = WiFiConfigMsgType.TypeCmdGetStatus;
+
+    var cmdGetStatus = CmdGetStatus();
+    payload.cmdGetStatus = cmdGetStatus;
+
+    var reqData = await security.encrypt(payload.writeToBuffer());
+    var respData = await transport.sendReceive('prov-config', reqData);
+    var respRaw = await security.decrypt(respData);
+    var respPayload = WiFiConfigPayload.fromBuffer(respRaw);
+
+    if (respPayload.respGetStatus.staState.value == 0) {
+      return ConnectionStatus(
+          state: WifiConnectionState.Connected,
+          ip: respPayload.respGetStatus.connected.ip4Addr);
+    } else if (respPayload.respGetStatus.staState.value == 1) {
+      return ConnectionStatus(state: WifiConnectionState.Connecting);
+    } else if (respPayload.respGetStatus.staState.value == 2) {
+      return ConnectionStatus(state: WifiConnectionState.Disconnected);
+    } else if (respPayload.respGetStatus.staState.value == 3) {
+      if (respPayload.respGetStatus.failReason.value == 0) {
+        return ConnectionStatus(
+          state: WifiConnectionState.ConnectionFailed,
+          failedReason: WifiConnectFailedReason.AuthError,
+        );
+      } else if (respPayload.respGetStatus.failReason.value == 1) {
+        return ConnectionStatus(
+          state: WifiConnectionState.ConnectionFailed,
+          failedReason: WifiConnectFailedReason.NetworkNotFound,
+        );
+      }
+      return ConnectionStatus(state: WifiConnectionState.ConnectionFailed);
+    }
+
+    return null;
   }
 
   Future<Uint8List> sendReceiveCustomData(Uint8List data, {int packageSize = 256}) async {
