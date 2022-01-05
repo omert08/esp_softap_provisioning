@@ -5,3 +5,6 @@
 .pub/
 
 build/
+
+pubspec.lock
+analysis_options.yaml

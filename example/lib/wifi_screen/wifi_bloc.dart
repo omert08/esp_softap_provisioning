@@ -6,7 +6,7 @@ import 'package:esp_softap_provisioning/src/connection_models.dart';
 import 'package:logger/logger.dart';
 import '../softap_service.dart';
 import './wifi.dart';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:convert';
 
 class WiFiBlocSoftAP extends Bloc<WifiEvent, WifiState> {
