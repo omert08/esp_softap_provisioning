@@ -119,6 +119,10 @@ class Security1 implements Security {
         logger.i(
             'setup0Response: pop: $pop, hash: ${hash.bytes.toString()} sharedK: ${sharedKeyBytes.toString()}');
       }
+      else
+      {
+        sharedKeyBytes = Uint8List.fromList(sharedSecret);
+      }
       await this.crypt.init(sharedKeyBytes, deviceRandom);
       logger.i(
           'setup0Response: cipherSecretKey: ${sharedKeyBytes.toString()} cipherNonce: ${deviceRandom.toString()}');
