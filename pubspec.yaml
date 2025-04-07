@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  protobuf: ^2.0.0
+  protobuf: ^4.0.0
   cryptography: ^2.0.1
   logger: ^1.0.0
   string_validator: ^0.3.0
