@@ -133,7 +133,7 @@ class Security1 implements Security {
 
   Future<SessionData> setup1Request(SessionData responseData) async {
     logger.i('setup1Request ${devicePublicKey.toString()}');
-    var clientVerify = await encrypt(devicePublicKey.bytes);
+    var clientVerify = await encrypt(Uint8List.fromList(devicePublicKey.bytes));
 
     logger.i('client verify ${clientVerify.toString()}');
     var setupRequest = SessionData();
