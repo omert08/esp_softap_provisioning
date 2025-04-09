@@ -15,11 +15,11 @@ class Provisioning {
   Transport transport;
   Security security;
 
-  Provisioning({this.transport, this.security});
+  Provisioning({required this.transport, required this.security});
 
   Future<bool> establishSession() async {
     try {
-      SessionData responseData;
+      SessionData responseData = SessionData();
       await transport.connect();
       while (true) {
         var request = await security.securitySession(responseData);
@@ -43,7 +43,7 @@ class Provisioning {
     return transport.disconnect();
   }
 
-  Future<List<Map<String, dynamic>>> startScanWiFi() async {
+  Future<List<Map<String, dynamic>>?> startScanWiFi() async {
     return await scan();
   }
 
@@ -121,7 +121,8 @@ class Provisioning {
     if (respPayload.msg != WiFiScanMsgType.TypeRespScanResult) {
       throw Exception('Invalid expected message type $respPayload');
     }
-    List<Map<String, dynamic>> ret = new List<Map<String, dynamic>>();
+    List<Map<String, dynamic>> ret =
+        List<Map<String, dynamic>>.empty(growable: true);
     for (var entry in respPayload.respScanResult.entries) {
       ret.add({
         'ssid': utf8.decode(entry.ssid),
@@ -134,8 +135,7 @@ class Provisioning {
     return ret;
   }
 
-  Future<List<Map<String, dynamic>>> scan(
-
+  Future<List<Map<String, dynamic>>?> scan(
       {bool blocking = true,
       bool passive = false,
       int groupChannels = 5,
@@ -149,7 +149,7 @@ class Provisioning {
           periodMs: periodMs);
       var status = await scanStatusRequest();
       var resultCount = status.respScanStatus.resultCount;
-      List<Map<String, dynamic>> ret = new List<Map<String, dynamic>>();
+      List<Map<String, dynamic>> ret = List.empty(growable: true);
       if (resultCount > 0) {
         var index = 0;
         var remaining = resultCount;
@@ -168,7 +168,7 @@ class Provisioning {
     return null;
   }
 
-  Future<bool> sendWifiConfig({String ssid, String password}) async {
+  Future<bool> sendWifiConfig({String? ssid, String? password}) async {
     var payload = WiFiConfigPayload();
     payload.msg = WiFiConfigMsgType.TypeCmdSetConfig;
 
@@ -193,7 +193,7 @@ class Provisioning {
     return (respPayload.respApplyConfig.status == Status.Success);
   }
 
-  Future<ConnectionStatus> getStatus() async {
+  Future<ConnectionStatus?> getStatus() async {
     var payload = WiFiConfigPayload();
     payload.msg = WiFiConfigMsgType.TypeCmdGetStatus;
 
@@ -231,7 +231,8 @@ class Provisioning {
     return null;
   }
 
-  Future<Uint8List> sendReceiveCustomData(Uint8List data, {int packageSize = 256}) async {
+  Future<Uint8List> sendReceiveCustomData(Uint8List data,
+      {int packageSize = 256}) async {
     var i = data.length;
     var offset = 0;
     List<int> ret = [];

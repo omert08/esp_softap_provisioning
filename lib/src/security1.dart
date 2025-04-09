@@ -13,16 +13,16 @@ class Security1 implements Security {
   final String pop;
   final bool verbose;
   SecurityState sessionState;
-  SimpleKeyPairData clientKey;
-  List<int> clientPubKey;
-  SimplePublicKey devicePublicKey;
-  Uint8List deviceRandom;
+  SimpleKeyPair? clientKey;
+  List<int>? clientPubKey;
+  SimplePublicKey? devicePublicKey;
+  Uint8List? deviceRandom;
   Cryptor crypt = Cryptor();
   var logger = Logger();
   final algorithm = X25519();
 
   Security1(
-      {this.pop,
+      {required this.pop,
         this.sessionState = SecurityState.REQUEST1,
         this.verbose = false});
 
@@ -36,9 +36,9 @@ class Security1 implements Security {
     return encrypt(data);
   }
 
-  Future<void> _generateKey() async {
+  Future<SimpleKeyPair> _generateKey() async {
     // creates client key with X25519 algo
-    this.clientKey = await algorithm.newKeyPair();
+    return await algorithm.newKeyPair();
   }
 
 
@@ -55,7 +55,7 @@ class Security1 implements Security {
     return ret;
   }
 
-  Future<SessionData> securitySession(SessionData responseData) async {
+  Future<SessionData?> securitySession(SessionData responseData) async {
     if (sessionState == SecurityState.REQUEST1) {
       sessionState = SecurityState.RESPONSE1_REQUEST2;
       return await setup0Request();
@@ -77,9 +77,10 @@ class Security1 implements Security {
     var setupRequest = new SessionData();
 
     setupRequest.secVer = SecSchemeVersion.SecScheme1;
-    await _generateKey();
+    SimpleKeyPair key = await _generateKey();
+    this.clientKey = key;
     SessionCmd0 sc0 = SessionCmd0();
-    await clientKey.extractPublicKey().then((publicKey) {
+    await key.extractPublicKey().then((publicKey) {
       sc0.clientPubkey = publicKey.bytes;
       clientPubKey = publicKey.bytes;
     });
@@ -91,20 +92,22 @@ class Security1 implements Security {
     return setupRequest;
   }
 
-  Future<SessionData> setup0Response(SessionData responseData) async {
+  Future<SessionData?> setup0Response(SessionData responseData) async {
     SessionData setupResp = responseData;
     if (setupResp.secVer != SecSchemeVersion.SecScheme1) {
       throw Exception('Invalid sec scheme');
     }
-    devicePublicKey = SimplePublicKey(setupResp.sec1.sr0.devicePubkey, type: KeyPairType.x25519);
-    deviceRandom = Uint8List.fromList(setupResp.sec1.sr0.deviceRandom);
+    SimplePublicKey devicePublicKey = SimplePublicKey(setupResp.sec1.sr0.devicePubkey, type: KeyPairType.x25519);
+    this.devicePublicKey = devicePublicKey;
+    Uint8List deviceRandom = Uint8List.fromList(setupResp.sec1.sr0.deviceRandom);
+    this.deviceRandom = deviceRandom;
 
     logger.i(
         'setup0Response:Device public key ${devicePublicKey.toString()}');
     logger.i('setup0Response:Device random ${deviceRandom.toString()}');
 
     final sharedKey = await algorithm.sharedSecretKey(
-        keyPair: clientKey,
+        keyPair: clientKey!,
         remotePublicKey: devicePublicKey);
 
     await sharedKey.extractBytes().then((sharedSecret) async {
@@ -128,12 +131,12 @@ class Security1 implements Security {
           'setup0Response: cipherSecretKey: ${sharedKeyBytes.toString()} cipherNonce: ${deviceRandom.toString()}');
       return setupResp;
     });
-
+    return null;
   }
 
   Future<SessionData> setup1Request(SessionData responseData) async {
     logger.i('setup1Request ${devicePublicKey.toString()}');
-    var clientVerify = await encrypt(Uint8List.fromList(devicePublicKey.bytes));
+    var clientVerify = await encrypt(Uint8List.fromList(devicePublicKey!.bytes));
 
     logger.i('client verify ${clientVerify.toString()}');
     var setupRequest = SessionData();
@@ -148,7 +151,7 @@ class Security1 implements Security {
     return setupRequest;
   }
 
-  Future<SessionData> setup1Response(SessionData responseData) async {
+  Future<SessionData?> setup1Response(SessionData responseData) async {
     logger.i('setup1Response');
     var setupResp = responseData;
     if (setupResp.secVer == SecSchemeVersion.SecScheme1) {

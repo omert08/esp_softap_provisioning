@@ -67,20 +67,20 @@ class WiFiBlocSoftAP extends Bloc<WifiEvent, WifiState> {
     await Future.delayed(Duration(seconds: 10));
     var connectionStatus = await prov.getStatus();
 
-    if (connectionStatus.state == WifiConnectionState.Connected) {
+    if (connectionStatus?.state == WifiConnectionState.Connected) {
       yield WifiStateProvisionedSuccessfully();
     }
     /*else if (connectionStatus.state == 1){
 
     }*/
-    else if (connectionStatus.state == WifiConnectionState.Disconnected){
+    else if (connectionStatus?.state == WifiConnectionState.Disconnected){
       yield WifiStateProvisioningDisconnected();
     }
-    else if (connectionStatus.state == WifiConnectionState.ConnectionFailed){
-      if (connectionStatus.failedReason == WifiConnectFailedReason.AuthError){
+    else if (connectionStatus?.state == WifiConnectionState.ConnectionFailed){
+      if (connectionStatus?.failedReason == WifiConnectFailedReason.AuthError){
         yield WifiStateProvisioningAuthError();
       }
-      else if (connectionStatus.failedReason == WifiConnectFailedReason.NetworkNotFound){
+      else if (connectionStatus?.failedReason == WifiConnectFailedReason.NetworkNotFound){
         yield WifiStateProvisioningNetworkNotFound();
       }
     }

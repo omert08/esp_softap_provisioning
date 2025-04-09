@@ -10,11 +10,11 @@ class ScanList extends StatelessWidget {
   final ItemTapCallback onTap;
   final bool disableLoading;
 
-  ScanList(this.items, this.icon, {this.onTap, this.disableLoading});
+  ScanList(this.items, this.icon,
+      {required this.onTap, required this.disableLoading});
 
-  Widget _buildItem(
-      BuildContext _context, Map<String, dynamic> item, IconData icon,
-      {ItemTapCallback onTap}) {
+  Widget _buildItem(BuildContext _context, Map<String, dynamic> item,
+      IconData icon, ItemTapCallback onTap) {
     return ListTile(
         leading: Container(
           padding: EdgeInsets.all(4.0),
