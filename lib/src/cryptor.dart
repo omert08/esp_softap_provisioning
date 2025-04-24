@@ -13,8 +13,9 @@ class Cryptor {
     });
   }
   Future<Uint8List> crypt (Uint8List data) async {
-    return _channel.invokeMethod('crypt', {
+    Uint8List? returnVal = await _channel.invokeMethod<Uint8List>('crypt', {
       'data': data,
     });
+    return returnVal!;
   }
 }

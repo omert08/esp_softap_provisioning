@@ -15,14 +15,13 @@ class TransportHTTP implements Transport{
   Map<String, String> headers = new Map();
   var client = http.Client();
 
-  TransportHTTP(String hostname) {
+  TransportHTTP(String hostname)
+      : this.hostname = hostname,
+        this.timeout = Duration(seconds: 10) {
     if (!isURL(hostname)) {
       throw FormatException('hostname should be an URL.');
     }
-    else {
-      this.hostname = hostname;
-    }
-    this.timeout = Duration(seconds: 10);
+  
 
     headers["Content-type"] =  "application/x-www-form-urlencoded";
     //header["Content-type"] =  "application/json";
@@ -36,11 +35,11 @@ class TransportHTTP implements Transport{
   }
 
   @override
-  Future<void> disconnect() {
+  Future<void> disconnect() async {
     client.close();
   }
   void _updateCookie(http.Response response) {
-    String rawCookie = response.headers['set-cookie'];
+    String? rawCookie = response.headers['set-cookie'];
     if (rawCookie != null) {
       int index = rawCookie.indexOf(';');
       headers['cookie'] =
@@ -65,8 +64,12 @@ class TransportHTTP implements Transport{
         }
         else {
           print('Connection failed');
-          throw Exception("ESP Device doesn't repond");
+          throw Exception("ESP Device didn't respond with HTTP status code 200 OK");
         }
+      }
+      else {
+        print('Connection failed');
+        throw Exception("ESP Device doesn't repond");
       }
     }
     catch(e){
